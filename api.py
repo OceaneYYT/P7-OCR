@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 import pandas as pd
 import pickle
+import uvicorn
 import shap
 
 # Create a FastAPI instance
@@ -31,7 +32,24 @@ def test_client_id(client_id: int):
     :return: message (string).
     """
     if client_id in list(data['SK_ID_CURR']):
-        return {'error': 'Client ID not found'}
+        return 'Client ID is valid'
     else:
-        return {'valid': 'Client ID is valid'}
+        return 'Client ID not found'
 
+
+@app.get('/prediction/{client_id}')
+def get_prediction(client_id: int):
+    """
+    Calculates the probability of default for a client.
+    :param: client_id (int)
+    :return: probability of default (dict).
+    """
+    client_data = data[data['SK_ID_CURR'] == client_id]
+    print(client_data)
+    features = client_data.drop('SK_ID_CURR', axis=1)
+    prediction = model.predict_proba(features)
+    return {'prediction': prediction.tolist()}
+
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)

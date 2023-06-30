@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import uvicorn
 import shap
+import json
 
 # Create a FastAPI instance
 app = FastAPI()
@@ -25,7 +26,7 @@ def welcome():
 
 
 @app.get('/{client_id}')
-def test_client_id(client_id: int):
+def check_client_id(client_id: int):
     """
     Customer search in the database
     :param: client_id (int)
@@ -45,10 +46,22 @@ def get_prediction(client_id: int):
     :return: probability of default (dict).
     """
     client_data = data[data['SK_ID_CURR'] == client_id]
-    print(client_data)
     features = client_data.drop('SK_ID_CURR', axis=1)
     prediction = model.predict_proba(features)
     return {'prediction': prediction.tolist()}
+
+
+@app.get('/shap/')
+def shap_values():
+    """
+    Calculates shap values
+    :param: client_id (int)
+    :return: explainer et shap values
+    """
+    explainer = shap.TreeExplainer(model['classifier'])
+    shap_val = explainer.shap_values(data.drop('SK_ID_CURR', axis=1))
+    print(shap_val)
+    return {'explainer': explainer, 'shap_values': shap_val}
 
 
 if __name__ == '__main__':

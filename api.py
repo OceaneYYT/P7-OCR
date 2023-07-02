@@ -1,5 +1,6 @@
 # Library imports
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
+from pydantic import BaseModel
 import pandas as pd
 import pickle
 import uvicorn
@@ -12,6 +13,8 @@ app = FastAPI()
 # Loading the model and data
 model = pickle.load(open('model.pkl', 'rb'))
 data = pd.read_csv('test_df_sample.csv')
+
+explainer = shap.TreeExplainer(model['classifier'])
 
 
 # Functions
@@ -33,9 +36,9 @@ def check_client_id(client_id: int):
     :return: message (string).
     """
     if client_id in list(data['SK_ID_CURR']):
-        return 'Client ID is valid'
+        return True
     else:
-        return 'Client ID not found'
+        return False
 
 
 @app.get('/prediction/{client_id}')
@@ -43,25 +46,25 @@ def get_prediction(client_id: int):
     """
     Calculates the probability of default for a client.
     :param: client_id (int)
-    :return: probability of default (dict).
+    :return: probability of default (float).
     """
     client_data = data[data['SK_ID_CURR'] == client_id]
-    features = client_data.drop('SK_ID_CURR', axis=1)
-    prediction = model.predict_proba(features)
-    return {'prediction': prediction.tolist()}
+    info_client = client_data.drop('SK_ID_CURR', axis=1)
+    prediction = model.predict_proba(info_client)[0][1]
+    return prediction
 
 
 @app.get('/shap/')
 def shap_values():
     """
     Calculates shap values
-    :param: client_id (int)
-    :return: explainer et shap values
+    :param:
+    :return: shap values
     """
-    explainer = shap.TreeExplainer(model['classifier'])
+    # explainer = shap.TreeExplainer(model['classifier'])
     shap_val = explainer.shap_values(data.drop('SK_ID_CURR', axis=1))
     print(shap_val)
-    return {'explainer': explainer, 'shap_values': shap_val}
+    return {'shap_values': shap_val}
 
 
 if __name__ == '__main__':

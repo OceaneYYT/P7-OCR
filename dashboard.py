@@ -1,5 +1,4 @@
-# Dash URL : http://localhost:8501
-
+# Import des librairies
 import streamlit as st
 from PIL import Image
 import shap
@@ -11,11 +10,13 @@ import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.lines as mlines
+
 
 # local
-API_URL = "http://127.0.0.1:8000/"
+# API_URL = "http://127.0.0.1:8000/"
 # deployment cloud
-# API_URL =
+API_URL = "https://p7-ocr-fastapi-95768180a01f.herokuapp.com/"
 
 # Chargement des dataset
 data_train = pd.read_csv('train_df_sample.csv')
@@ -142,7 +143,7 @@ def distribution(feature, id_client, df):
     ax.hist(df[df['TARGET'] == 0][feature], bins=30, label='accordé')
     ax.hist(df[df['TARGET'] == 1][feature], bins=30, label='refusé')
 
-    observation_value = data_test.loc[data_test['SK_ID_CURR'] == id_client][feature][0]
+    observation_value = data_test.loc[data_test['SK_ID_CURR'] == id_client][feature].values
     ax.axvline(observation_value, color='green', linestyle='dashed', linewidth=2, label='Client')
 
     ax.set_xlabel('Valeur de la feature', fontsize=20)
@@ -192,22 +193,24 @@ def boxplot_graph(id_client, feat, df_vois):
     fig, ax = plt.subplots(figsize=(15, 10))
     sns.boxplot(data=df_box, x='variables', y='values', hue='TARGET', ax=ax)
 
+
+    df_voisins_scaled = minmax_scale(df_vois, 'minmax')
+    df_voisins_box = df_voisins_scaled.melt(id_vars=['TARGET'], value_vars=feat,
+                                            var_name="var", value_name="val")
+    sns.swarmplot(data=df_voisins_box, x='var', y='val', hue='TARGET', size=8,
+                  palette=['green', 'red'], ax=ax)
+
     data_client = data_test_mm.loc[data_test['SK_ID_CURR'] == id_client][feat]
     categories = ax.get_xticks()
     for cat in categories:
         plt.scatter(cat, data_client.iloc[:, cat], marker='*', s=250, color='blueviolet', label='Client')
 
-    df_voisins_scaled = minmax_scale(df_vois, 'minmax')
-    df_voisins_box = df_voisins_scaled.melt(id_vars=['TARGET'], value_vars=feat,
-                                            var_name="var", value_name="val")
-    df_voisins_box['color'] = np.where(df_voisins_box['TARGET'] == 0, 'green', 'red')
-    sns.swarmplot(data=df_voisins_box, x='var', y='val', size=8, label='Voisins', ax=ax,
-                  color=df_voisins_box['color'].unique())
-
     ax.set_title(f'Boxplot des caractéristiques sélectionnées')
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), ['Accordé', 'Refusé', 'Client', 'Voisins'])
+    handles, _ = ax.get_legend_handles_labels()
+    if len(handles) < 8:
+        ax.legend(handles[:4], ['Accordé', 'Refusé', 'Voisins', 'Client'])
+    else:
+        ax.legend(handles[:5], ['Accordé', 'Refusé', 'Voisins (accordés)', 'Voisins (refusés)', 'Client'])
 
     st.pyplot(fig)
 
@@ -243,15 +246,15 @@ if page == "Home":
                 "\nLes prédictions sont calculées à partir d'un algorithme d'apprentissage automatique, "
                 "préalablement entraîné. Il s'agit d'un modèle *Light GBM* (Light Gradient Boosting Machine). "
                 "Les données utilisées sont disponibles [ici](https://www.kaggle.com/c/home-credit-default-risk/data). "
-                "Lors du déploiement, un sample de ces données a été utilisé.\n"
+                "Lors du déploiement, un échantillon de ces données a été utilisé.\n"
                 
                 "\nLe dashboard est composé de plusieurs pages :\n"
-                "- **Information du client**: Vous pouvez y retrouver toutes les informations relatives au client"
-                "selectionné dans la colonne de gauche, ainsi que le résultat de sa demande de crédit."
+                "- **Information du client**: Vous pouvez y retrouver toutes les informations relatives au client "
+                "selectionné dans la colonne de gauche, ainsi que le résultat de sa demande de crédit. "
                 "Je vous invite à accéder à cette page afin de commencer.\n"
-                "- **Interprétation locale**: Vous pouvez y retrouver quelles caractéritiques du client ont le plus"
+                "- **Interprétation locale**: Vous pouvez y retrouver quelles caractéritiques du client ont le plus "
                 "influençé le choix d'approbation ou refus de la demande de crédit.\n"
-                "- **Intérprétation globale**: Vous pouvez y retrouver notamment des comparaisons du client avec"
+                "- **Intérprétation globale**: Vous pouvez y retrouver notamment des comparaisons du client avec "
                 "les autres clients de la base de données ainsi qu'avec des clients similaires.")
 
 
@@ -395,4 +398,4 @@ if page == "Interprétation globale":
             st.caption("Les boxplot permettent d'observer les distributions des variables renseignées. "
                        "Une étoile violette représente le client. Ses plus proches voisins sont également "
                        "renseignés sous forme de points de couleurs (rouge pour ceux étant qualifiés comme "
-                       "étant en défaut et vert pour les autres.")
+                       "étant en défaut et vert pour les autres).")

@@ -327,6 +327,7 @@ if page == "Interprétation globale":
 
         list_features = list(data_train.columns)
         list_features.remove('SK_ID_CURR')
+        list_features.remove('TARGET')
         # Affichage des distributions des variables renseignées
         with st.spinner(text="Chargement des graphiques..."):
             col1, col2 = st.columns(2)
@@ -360,6 +361,7 @@ if page == "Interprétation globale":
 
         list_features = list(data_train.columns)
         list_features.remove('SK_ID_CURR')
+        list_features.remove('TARGET')
         list_features.insert(0, '<Select>')
 
         # Selection des features à afficher

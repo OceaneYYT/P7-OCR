@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# local
+# Local
 # API_URL = "http://127.0.0.1:8000/"
-# deployment cloud
+# Deployment cloud
 API_URL = "https://p7-ocr-fastapi-95768180a01f.herokuapp.com/"
 
 # Chargement des dataset

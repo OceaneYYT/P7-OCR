@@ -26,7 +26,7 @@ data_test = pd.read_csv('test_df_sample.csv')
 
 
 def minmax_scale(df, scaler):
-    """Preprocessing du dataframe en paramètre avec le scaler renseigné..
+    """Preprocessing du dataframe en paramètre avec le scaler renseigné.
     :param: df, scaler (str).
     :return: df_scaled.
     """
@@ -55,7 +55,7 @@ def get_prediction(client_id):
     proba_default = round(float(response.content), 3)
     best_threshold = 0.54
     if proba_default >= best_threshold:
-        decision = "Refusé "
+        decision = "Refusé"
     else:
         decision = "Accordé"
 
@@ -122,7 +122,7 @@ def get_shap_val():
 
 
 def df_voisins(id_client):
-    """Récupère les clients similaires à celui dont l'ID est passé en paraètre.
+    """Récupère les clients similaires à celui dont l'ID est passé en paramètre.
     :param: id_client (int)
     :return: data_voisins
     """

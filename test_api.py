@@ -2,7 +2,7 @@ from fastapi import status
 import requests
 import json
 
-#API_URL = "http://127.0.0.1:8000/"
+# API_URL = "http://127.0.0.1:8000/"
 API_URL = "https://p7-ocr-fastapi-95768180a01f.herokuapp.com/"
 
 

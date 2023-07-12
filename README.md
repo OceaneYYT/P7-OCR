@@ -14,3 +14,7 @@ Les données utilisées sont disponibles à cette adresse : https://www.kaggle.c
 1. Construire un modèle de scoring qui donnera une prédiction sur la probabilité de faillite d'un client de façon automatique.
 2. Construire un dashboard interactif à destination des gestionnaires de la relation client permettant d'interpréter les prédictions faites par le modèle, et d’améliorer la connaissance client des chargés de relation client.
 3. Mettre en production le modèle de scoring de prédiction à l’aide d’une API, ainsi que le dashboard interactif qui appelle l’API pour les prédictions.
+
+## Organisation
+Le projet est décomposé en 2 branches afin de faciliter le déploiement de l'API et du dashboard sur des URL séparées sans engendrer de frais trop importants.
+Vous trouverez dans la branche main les documents relatifs au déploiement de l'API et dans la branche dashboard, ceux relatif au déploiement du dashboard.

@@ -22,4 +22,5 @@ Vous trouverez dans la branche main les documents relatifs au déploiement de l'
 ## Le dashboard
 Le dashboard a été réalisé avec Streamlit et à l'aide d'une API elle-même réalisée avec FastAPI. Il a été dans un premier temps déployé sur Heroku.
 Vous pouvez visionner un enregistrement d'écran du dashboard en cliquant sur ce lien : https://youtu.be/LJZt62VteT4
+
 Le dashboard présenté est celui pour un client dont le prêt a été accordé. Pour visionner la version d'un client dont le prêt est refusé, veuillez cliquer sur le fichier "Enregistrement dashboard - client refus.mov".
